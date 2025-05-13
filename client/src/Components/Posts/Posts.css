@@ -1,0 +1,92 @@
+.post {
+    display: flex;
+    gap: 8px;
+    padding: 10px 10px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .post-rank {
+    color: #6b7280; 
+    width: 20px;
+  }
+  
+  .post-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  span.post-domain {
+    display: inline-block;
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: 400;
+  }
+  
+  .post-domain:hover {
+    text-decoration: underline;
+  }
+  
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: -20px;
+  }
+  
+  .inline-text {
+    margin: 0;
+    padding: 0;
+    display: inline;
+  }
+  
+  
+  .post-hide {
+    cursor: pointer;
+  }
+  
+  .post-hide:hover {
+    text-decoration: underline;
+  }
+  
+  .link {
+    text-decoration: none;
+    color: grey;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  
+  .title {
+    display: inline-flex;
+    padding: 0px 0px; 
+  }
+  
+  .title span {
+    padding: 0px;
+  }
+  
+  .post-link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .post-link:hover .post-domain {
+    text-decoration: underline;
+  }
+  
+  span.post-title {
+    color: black;
+    text-decoration: none;
+    font-family: Verdana, Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    padding-right: 5px;
+  }
+  

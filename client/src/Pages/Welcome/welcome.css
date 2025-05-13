@@ -1,0 +1,40 @@
+.mainContent {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 0px;
+    background-color: #f6f6ef;
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #000;
+    border: 1px solid #eee;
+    border: none;
+  }
+  
+  .mainContent img {
+    display: block;
+    margin: 0 auto 20px;
+    width: 100%;
+  }
+  
+  .title {
+    font-weight: bold;
+    margin-top: 3px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-family: Verdana;
+    font-size: 8.5pt;
+    line-height: 138%;
+  }
+  
+  .paragraph {
+    margin-bottom: 16px;
+    font-family: Verdana;
+      font-size: 8.5pt;
+      line-height: 138%;
+  }
+  
+  .link-of {
+    color: black;
+  }
+    

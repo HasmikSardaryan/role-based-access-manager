@@ -1,0 +1,12 @@
+.about-user {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+  
+.submissions-link {
+    color: rgb(147, 112, 46);
+    text-decoration: underline;
+    cursor: pointer;
+}
+  

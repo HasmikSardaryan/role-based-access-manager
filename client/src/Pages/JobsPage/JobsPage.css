@@ -1,0 +1,12 @@
+body {
+    padding: 0px 110px;
+}
+
+.homepage {
+    background: #f6f6ee;
+}
+.title {
+    display: inline-flex;
+    align-items: center;
+  
+}

@@ -1,0 +1,55 @@
+body {
+    background-color: #ffffff;
+    margin: 0;
+    font-family: Verdana, Geneva, sans-serif;
+  }
+  
+  .submit-container {
+    background-color: #f6f6ef;
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    border: 1px solid #eeeeee;
+  }
+  
+  .header {
+    background-color: #ff6600;
+    color: white;
+    font-weight: bold;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  .error {
+    color: #b00000;
+    font-size: 13px;
+    margin-top: 15px;
+  }
+  
+  .submit-form {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  
+  .submit-form input[type="text"],
+  .submit-form textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 13px;
+    padding: 4px;
+    border: 1px solid #cccccc;
+    background-color: white;
+  }
+  
+  .submit-form button {
+    font-size: 13px;
+    padding: 3px 10px;
+    margin-top: 5px;
+  }
+  
+  .note {
+    font-size: 11px;
+    color: #666666;
+    margin-top: 15px;
+  }
+  
