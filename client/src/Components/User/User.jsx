@@ -1,12 +1,17 @@
 import React from 'react';
+import { Link } from "react-router-dom";
+import useUser from '../../hooks/useUser';
+import './User.css'
 
-const User = ({ user, created, karma, about}) => {
+const User = ({ img, username, email, phone }) => {
   return (
-    <div className="post">
-      <p><strong>user:</strong> {user}</p>
-      <p><strong>created:</strong> <span>{created}</span></p>
-      <p><strong>karma:</strong> {karma}</p>
-      <p><strong>about:</strong>{about}</p>
+    <div className="user-card">
+      <img src={img} alt={username} className="user-avatar" />
+      <div className="user-info">
+        <span className="user-name">{username}</span>
+        <span className="user-email">{email}</span>
+        <span className="user-phone">{phone}</span>
+      </div>
     </div>
   );
 };

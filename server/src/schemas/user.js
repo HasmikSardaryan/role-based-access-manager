@@ -1,59 +1,44 @@
 import mongoose from "mongoose";
-import Post from "./Post.js";
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    required: true,
-    unique: true,
+    // unique: true,
     trim: true,
   },
   password: {
     type: String,
-    required: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  karma: {
-    type: Number,
-    default: 0,
+  status: {
+    type: String,
+    enum: ['invited', 'active', 'deleted'], 
+    default: 'invited'
   },
   about: {
     type: String,
     default: "",
   },
-  email: {
+  email: { 
+    type: String, 
+    // required: true, 
+    // unique: true,
+    lowercase: true, 
+    trim: true 
+  },
+  phone: {
     type: String,
-    trim: true,
-    lowercase: true,
+    default: ''
   },
-  showdead: {
-    type: Boolean,
-    default: false,
+  role: {
+    type: String,
+    enum: ['user', 'admin'], 
+    default: 'user',
   },
-  noprocrast: {
-    type: Boolean,
-    default: false,
+  permissions: {
+    type: [String],
+    default: []
   },
-  maxvisit: {
-    type: Number,
-    default: 20,
-  },
-  minaway: {
-    type: Number,
-    default: 180,
-  },
-  delay: {
-    type: Number,
-    default: 0,
-  },
-  posts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-    },
-  ],
+  inviteToken: String, 
 });
 
 const User = mongoose.model("User", userSchema);

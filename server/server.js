@@ -1,7 +1,6 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors'
-
 import AuthRouter from './src/routers/Auth.router.js';
 import PostRouter from './src/routers/Post.router.js';
 import connectToDB from './db.js';
@@ -9,15 +8,17 @@ import connectToDB from './db.js';
 
 connectToDB();
 const app = express();
-connectToDB();
+
+app.use(cookieParser());
+app.use(express.json());
+
 app.use(cors({
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 })); 
-app.use(express.json());
-app.use(cookieParser());
+
 
 app.use(AuthRouter);
 app.use(PostRouter);

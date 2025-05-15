@@ -1,184 +1,86 @@
-import User from "../schemas/User.js";
-import Comment from "../schemas/comment.js";
-import Post from "../schemas/Post.js";
-import Reply from "../schemas/reply.js";
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import User from "../schemas/user.js";
+import transporter from '../../mailer.js';
 
-export const create_post = async (req, res) => { 
-  const { title, url, text } = req.body;
-  
-  if (!title || !url) {
-    return res.status(400).json({ error: 'Missing title or url' });
-  }
+export const get_users = async (req, res) =>  {
   try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    const newPost = new Post({ title, url, author: user._id });
-    const savedPost = await newPost.save();
-
-    user.posts.push(savedPost._id);
-    await user.save();
-
-    res.status(201).json({ message: 'Post created successfully!', post: savedPost });
-
-  } catch (error) {
-    console.error('Error creating post:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-export const get_posts = async (req, res) => {
-    try {
-      const posts = await Post.find({}).populate("author", "username");
-      res.json(posts);
-    } catch (err) {
-      console.error("Failed to fetch posts:", err);
-      res.status(500).json({ error: "Server Error" });
-    }
-};
-export const get_user = async (req, res) =>  {
-    try {
-      const user = await User.findById(req.params.id).populate("posts");
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      res.json(user);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      res.status(500).json({ error: 'Server error' });
-    }
-};
-export const post_comment = async (req, res) => {
-  const { text } = req.body;
-  const postId = req.params.id;
-
-  if (!text) return res.status(400).json({ error: 'Missing text' });
-
-  try {
-    const user = await User.findById(req.user.id);
-    const post = await Post.findById(postId);
-
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-
-    const comment = await Comment.create({ text, author: user._id });
-
-    post.comments.push(comment._id);
-    await post.save();
-
-    res.status(201).json({ message: 'Comment created!', comment });
+    const users = await User.find({ status: "active" });
+    res.json(users);
   } catch (err) {
-    console.error('Error creating comment:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-export const get_comments = async (req, res) => {
-    try {
-      const post = await Post.findById(req.params.id).populate({
-        path: 'comments',
-        populate: { path: 'author', select: 'username' }
-      });  
-      if (!post) {
-        return res.status(404).json({ error: 'Post not found' });
-      }
-  
-      res.json(post.comments);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server error' });
-    }
-};
-export const get_post = async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.postId)
-    .populate('author', 'username')
-    .populate('comments');
-
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-
-    res.json(post);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-export const get_commentById = async (req, res) => {
-  try {
-    const comment = await Comment.findById(req.params.commentId)
-    .populate("author", "username") 
-    .populate("children"); 
-    res.json(comment);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-export const get_user_posts = async (req, res) => {
-
-  const { id } = req.params;
-
-  try {
-    const posts = await Post.find({ author: id }).populate("author", "username");
-    if (!posts.length) {
-      return res.status(404).json({ message: "No posts found for this user" });
-    }
-
-    res.json(posts);
-  } catch (err) {
-    console.error("Failed to fetch user posts:", err);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
-export const get_allcomments = async (req, res) => {
-  try {
-    const comments = await Comment.find({})
-      .populate("author", "username") 
-      .populate("children");           
-      return res.json(comments);
-  } catch (err) {
-    console.error("Failed to fetch comments:", err);
+    console.error("Failed to fetch users:", err);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-export const post_reply = async (req, res) => {
-  const { text } = req.body;
-  const id = req.params.id;
-
-  if (!text) return res.status(400).json({ error: 'Missing text' });
-
+export const invite_user = async (req, res) => {
+  const { email, permissions } = req.body;
   try {
-    const comment = await Comment.findById(id);
-    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+    const requestingUser = req.user;
 
-    const user = req.user;
-    if (!user) return res.status(401).json({ error: 'no token' });
+    if (!requestingUser.permissions || !requestingUser.permissions.includes("invite")) {
+      return res.status(403).json({ message: "Unauthorized to invite users." });
+    }
 
-    const reply = await Reply.create({
-      text,
-      author: user.username,
-      parent: comment._id
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already invited or registered.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+
+    const newUser = new User({
+      email,
+      permissions,
+      inviteToken: token,
+      status: 'invited',
+      role: 'user',
     });
 
-    comment.children.push(reply._id);
-    await comment.save();
+    await newUser.save();
 
-    res.status(201).json({ message: 'Reply created!', reply });
+
+    const inviteLink = `http://localhost:3000/activate/${token}`;
+
+    await transporter.sendMail({
+      to: email,
+      subject: "You're invited to join!",
+      text: `Hello! You’ve been invited. Click here to activate your account:\n\n${inviteLink}`,
+      html: `<p>Hello! You’ve been invited.</p><p>Click <a href="${inviteLink}">here</a> to activate your account.</p>`,
+    });
+
+    res.status(200).json({ message: 'Invitation sent successfully.' });
+
   } catch (err) {
-    console.error('Error creating reply:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Invite Error:", err);
+    res.status(500).json({ message: 'Server error while sending invitation.' });
   }
 };
 
-export const get_reply =  async (req, res) => {
+
+export const delete_user = async (req, res) => {
+  const { id } = req.params;
+  const requestingUser = req.user;
+
   try {
-    const replies = await Reply.find({ parent: req.params.id })
-      .populate( 'parent', 'text')
-      .sort({ time: 1 });
-    res.status(200).json(replies);
+
+    if (!requestingUser.permissions.includes("delete")) {
+      return res.status(403).json({ error: "You don't have permission to delete users." });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { status: "deleted" },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.json({ message: "User status set to 'deleted'." });
   } catch (err) {
-    console.error('Error fetching replies:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error(err);
+    res.status(500).json({ error: "Server error." });
   }
 };

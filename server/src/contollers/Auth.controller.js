@@ -1,5 +1,4 @@
-import User from "../schemas/User.js";
-import Post from "../schemas/Post.js";
+import User from "../schemas/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
@@ -10,19 +9,16 @@ export const register_post = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ username });
-
+    const existingUser = await User.findOne({ username }); 
     if (existingUser) {
       return res.status(400).json({ error: "Username already exists" });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
-
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Server error during registration" });
   }
 };
@@ -42,18 +38,21 @@ export const login_post = async (req, res) => {
       return res.status(400).json({ error: "Incorrect password" });
     }
     const token = jwt.sign(
-      { id: user._id, username: user.username },
+      { id: user._id, 
+        username: user.username, 
+        role: user.role, 
+        permissions: user.permissions,},
       JWT_SECRET,
       {
         expiresIn: "1h",
       }
     );
-
-    res.cookie("token", token, {
+    res.cookie('token', token, {
+      path: '/',       
       httpOnly: true,
-      secure: false,
-      sameSite: "Strict",
-      maxAge: 3 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax', 
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
@@ -70,3 +69,25 @@ export const logout_post = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
 };
+
+export const activate_user = async (req, res) => {
+  const { token } = req.params;
+  const { username, password, phone, about } = req.body;
+
+  try {
+    const user = await User.findOne({ inviteToken: token });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired token.' });
+
+    user.username = username;
+    user.password = password; 
+    user.about = about;
+    user.phone = phone;
+    user.status = 'active';
+    user.inviteToken = undefined;
+
+    await user.save();
+    res.status(200).json({ message: 'Account activated successfully.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Activation failed.' });
+  }
+}
