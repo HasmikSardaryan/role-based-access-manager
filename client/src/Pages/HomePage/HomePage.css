@@ -1,11 +1,10 @@
 body {
     padding: 0px;
     margin: 0px;
-    background-color: rgb(193, 193, 193); 
-    color: white;
-    font-family: sans-serif;
+    background-color: #f5f5f5;
+    color: #333333; 
+    font-family: 'Arial', sans-serif;
 }
-  
 .container {
     display: flex;
     flex-direction: column;
@@ -15,50 +14,47 @@ body {
     margin: 120px auto 0 auto;
     width: 100%;
 }
-  
 .user-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
     padding: 20px;
-    border-radius: 5px;
-    border: 2px solid #828ddf;
-    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 2px solid #d1c6b1;
+    background-color: #f9f4eb; 
 }
-  
-
-  
-.create-user-button {
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #4CAF50;
+.invite-user-btn {
+    margin: 20px;
+    padding: 10px 40px;
+    background-color: #cea977;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     display: block;
 }
-  
-.create-user-button:hover {
-    background-color: #45a049;
+.invite-user-btn:hover {
+    background-color: #c68c53; 
 }
-  
-
+.loggin-btn:hover {
+    background-color: #c68c53; 
+}
+.logout-btn:hover {
+    background-color: #c68c53; 
+}
 .user-card {
     padding: 15px;
-    border-radius: 12px;
-    background-color: rgb(193, 193, 193); 
-    border: 1px solid #5a5a9e;
+    border-radius: 5px;
+    background-color: #fff9f1; 
+    border: 1px solid #e2d1b3; 
     position: relative;
 }
-  
 .user-actions {
     display: flex;
     gap: 10px;
     margin-top: 10px;
 }
-  
 .edit-btn,
 .delete-btn {
     padding: 5px 10px;
@@ -67,22 +63,33 @@ body {
     cursor: pointer;
     font-size: 0.9rem;
 }
-  
 .edit-btn {
-    background-color: #2196f3;
+    background-color: #d1c6b1;
     color: white;
 }
-  
 .edit-btn:hover {
-    background-color: #0b7dda;
+    background-color: #b89d6a;
 }
-  
 .delete-btn {
-    background-color: #f44336;
+    background-color: #e6a8b5; 
     color: white;
 }
-  
 .delete-btn:hover {
-    background-color: #d32f2f;
+    background-color: #d67b8d; 
 }
-  
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-btn,
+.logout-btn {
+    margin: 20px;
+    padding: 10px 40px;
+    background-color: #cea977;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+}
