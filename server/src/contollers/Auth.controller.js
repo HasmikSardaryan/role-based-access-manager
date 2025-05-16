@@ -60,11 +60,6 @@ export const login_post = async (req, res) => {
   }
 };
 
-export const getUser = async (req, res) => {
-  const user = await User.findById(req.user.id).select("-password");
-  res.json({ user });
-};
-
 export const logout_post = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });

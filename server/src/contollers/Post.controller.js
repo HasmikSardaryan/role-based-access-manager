@@ -15,9 +15,9 @@ export const get_users = async (req, res) =>  {
     res.status(500).json({ error: "Server Error" });
   }
 };
-
 export const invite_user = async (req, res) => {
-  const { email, permissions } = req.body;
+  const { email, permissions, frontendUrl } = req.body;
+
   try {
     const requestingUser = req.user;
 
@@ -44,17 +44,20 @@ export const invite_user = async (req, res) => {
 
     await newUser.save();
 
-    const inviteLink = `${process.env.CLIENT_URL}/activate/${token}`;
+    const baseUrl = frontendUrl || process.env.CLIENT_URL;
+    const inviteLink = `${baseUrl}/activate/${token}`;
+
 
     await transporter.sendMail({
       to: email,
       subject: "You're invited to join!",
       html: `
-        <p>Hello! You've been invited.</p>
-        <p>Click <a href="${inviteLink}">here</a> to activate your account.</p>
-        <p>This link will expire in 5 hours.</p>
+      <p>Hello! You've been invited.</p>
+      <p>Click <a href="${inviteLink}">here</a> to activate your account.</p>
+      <p>This link will expire in 5 hours.</p>
       `,
     });
+
 
     res.status(200).json({ message: 'Invitation sent successfully.' });
 
@@ -63,7 +66,6 @@ export const invite_user = async (req, res) => {
     res.status(500).json({ message: 'Server error while sending invitation.' });
   }
 };
-
 export const delete_user = async (req, res) => {
   const { id } = req.params;
   const requestingUser = req.user;
@@ -90,9 +92,8 @@ export const delete_user = async (req, res) => {
     res.status(500).json({ error: "Server error." });
   }
 };
-
-
 export const activate_user = async (req, res) => {
+
   const { token } = req.params;
   console.log(req.body);
   const { password } = req.body;

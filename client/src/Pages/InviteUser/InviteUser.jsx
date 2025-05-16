@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./InviteUser.css";
 
 function InviteUserPage() {
+
   const [email, setEmail] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,9 +25,13 @@ function InviteUserPage() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ email, permissions }),
-      });
-
+        body: JSON.stringify({
+          email,
+          permissions,
+          frontendUrl: import.meta.env.VITE_NGROK_URL,
+        }),
+      });      
+      
       const data = await res.json();
 
       if (res.ok) {
