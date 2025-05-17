@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import './LoginPage.css';
+
 function Login() {
 
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function Login() {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         alert('Logged in siccessfully');
-        navigate(-1);
+        navigate('/');
       } else {
         alert(data.error || 'Invalid credentials');
       }
@@ -56,19 +57,17 @@ function Login() {
     <div className="login"> 
       <p>Login</p>
       <span className="log-span">
-      Username:    
+        Username:    
       <input type="text" onChange={e => setLoginUsername(e.target.value)}/>
       </span>
       <span className="log-span">
-      Password:
+        Password:
       <input type="password" onChange={e => setLoginPassword(e.target.value)}/>
       </span>
       <button onClick={handleLogin}>Login</button>
       <span className="log-span">
       <Link to="/forgot" style={{ color: '#551AB8' }}>Forgot your password?</Link>
       </span>
-    </div>
-    <div>
       <p>Create Account</p>
       <span className="log-span">
         Username:

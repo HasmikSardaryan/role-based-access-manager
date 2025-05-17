@@ -11,7 +11,13 @@ function InviteUserPage() {
 
   const navigate = useNavigate();
 
-  const allPermissions = ["delete user", "invite user"];
+  const allPermissions = [
+    "invite user",
+    "delete user",
+    "edit user",
+    "view_email",
+    "view_phone",
+  ];  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +44,7 @@ function InviteUserPage() {
         setMessage("Invitation sent successfully!");
         setEmail("");
         setPermissions([]);
-        setTimeout(() => navigate("/"), 1500);
+        // setTimeout(() => navigate("http://localhost:5173/login"), 1500);
       } else {
         setMessage(data.message || "Error sending invitation.");
       }

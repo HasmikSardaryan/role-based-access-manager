@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import './ActivateAccaunt.css'
+import './ActivateAccaunt.css';
 
 export default function Activate() {
   const { token } = useParams();
   const navigate = useNavigate();
+
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhoneNumber] = useState("");
   const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleActivate = async () => {
     if (!password || !username || !phone) {
+      setIsSuccess(false);
       setMessage("Please fill in all required fields.");
       return;
     }
+
     try {
       const res = await fetch(`http://localhost:3000/activate/${token}`, {
         method: "POST",
@@ -34,12 +38,15 @@ export default function Activate() {
       }
 
       if (!res.ok) {
+        setIsSuccess(false);
         throw new Error(data.message || "Activation failed.");
       }
 
+      setIsSuccess(true);
       setMessage(data.message || "Account activated successfully.");
       setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
+      setIsSuccess(false);
       setMessage(err.message || "Activation failed.");
     }
   };
@@ -67,8 +74,8 @@ export default function Activate() {
           onChange={(e) => setPhoneNumber(e.target.value)}
         />
       </div>
-      <button onClick={handleActivate}>Activate</button>
-      {message && <p>{message}</p>}
+      <button className="btn-act" onClick={handleActivate}>Activate</button>
+      {message && <p className={`msg ${isSuccess ? "success" : "error"}`}>{message}</p>}
     </div>
   );
 }

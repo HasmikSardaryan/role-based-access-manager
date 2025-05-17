@@ -64,25 +64,3 @@ export const logout_post = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
 };
-
-export const activate_user = async (req, res) => {
-  const { token } = req.params;
-  const { username, password, phone, about } = req.body;
-
-  try {
-    const user = await User.findOne({ inviteToken: token });
-    if (!user) return res.status(400).json({ message: 'Invalid or expired token.' });
-
-    user.username = username;
-    user.password = password; 
-    user.about = about;
-    user.phone = phone;
-    user.status = 'active';
-    user.inviteToken = undefined;
-
-    await user.save();
-    res.status(200).json({ message: 'Account activated successfully.' });
-  } catch (err) {
-    res.status(500).json({ message: 'Activation failed.' });
-  }
-}

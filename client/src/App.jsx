@@ -3,7 +3,7 @@ import Login from './Pages/LoginPage/LoginPage';
 import NotFoundPafge from './Pages/NotFoundPage/NotFoundPafge';
 import Reset from './Pages/ResetPage/ResetPage';
 import Logout from './Pages/LogoutPage/LogoutPage';
-import Activate from './Pages/Activate/ActivateAccaunt';
+import Activate from './Pages/ActivateAccaunt/ActivateAccaunt';
 import InviteUserPage from './Pages/InviteUser/InviteUser';
 import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 

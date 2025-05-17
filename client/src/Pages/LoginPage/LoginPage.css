@@ -13,6 +13,10 @@ button {
     cursor: pointer;
 }
 
+.login {
+    margin: 30px;
+}
+
 .log-span {
     display: block;
     padding: 10px

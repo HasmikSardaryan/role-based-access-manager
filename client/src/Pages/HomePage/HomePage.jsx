@@ -1,6 +1,4 @@
-import React from "react";
-import User from "../../Components/User/User";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
@@ -13,12 +11,11 @@ function HomePage() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-
     if (token) {
       fetch("http://localhost:3000/api/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch((err) => console.error("Error fetching users:", err));
+        .then((res) => res.json())
+        .then((data) => setUsers(data))
+        .catch((err) => console.error("Error fetching users:", err));
 
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
       const role = decodedToken.role;
@@ -32,10 +29,10 @@ function HomePage() {
     } else {
       navigate('/login');
     }
-  }, [token]);
+  }, [token, navigate]);
 
   const handleCreateUser = () => {
-    navigate('/admin/invite-user')
+    navigate('/admin/invite-user');
   };
 
   const handleDelete = async (userId) => {
@@ -55,6 +52,7 @@ function HomePage() {
 
       if (res.ok) {
         alert("User deleted successfully.");
+        setUsers(prev => prev.filter(u => u._id !== userId));
       } else {
         alert(data.error || "Failed to delete user.");
       }
@@ -75,55 +73,39 @@ function HomePage() {
   return (
     <>
       <div className="buttons">
-        {permissions.includes('invite') && (
+        {permissions.includes('invite user') && (
           <button className="invite-user-btn" onClick={handleCreateUser}>
-          Invite User
+            Invite User
           </button>
         )}
         {token ? (
           <button className="logout-btn" onClick={handleLogout}>
-          Logout
+            Logout
           </button>
-          ) : (
+        ) : (
           <button className="login-btn" onClick={handleLogin}>
-          Login
+            Login
           </button>
         )}
       </div>
 
-      <div className="container">
+      <div className="user-container">
         <div className="user-list">
-          <div className="user-card">
-            <User
-              username="Jane"
-              email="jane@example.com"
-              phone="123-456-7890"
-            />
-            <div className="user-actions">
-              {permissions.includes('edit') && (
-                <button className="edit-btn">Edit</button>
-              )}
-              {permissions.includes('delete') && (
-                <button className="delete-btn">Delete</button>
-              )}
-            </div>
-          </div>
           {users.map((user, index) => (
             <div className="user-card" key={`index-${index}`}>
-              <User
-                username={user.username}
-                email={user.email}
-                phone={user.phone}
-                _id={user._id}
-              />
+              <div className="user-info">
+                <p>username: {user.username}</p>
+                {permissions.includes("view email") && <p>email: {user.email}</p>}
+                {permissions.includes("view phone") && <p>phone number : {user.phone}</p>}
+              </div>
               <div className="user-actions">
-                {permissions.includes('edit') && (
+                {permissions.includes('edit user') && (
                   <button className="edit-btn" onClick={() => handleEdit(user._id)}>Edit</button>
                 )}
-                {permissions.includes('delete') && (
+                {permissions.includes('delete user') && (
                   <button className="delete-btn" onClick={() => handleDelete(user._id)}>Delete</button>
                 )}
-                </div>
+              </div>
             </div>
           ))}
         </div>

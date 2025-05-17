@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    // unique: true,
     trim: true,
   },
   password: {
@@ -20,8 +19,6 @@ const userSchema = new mongoose.Schema({
   },
   email: { 
     type: String, 
-    // required: true, 
-    // unique: true,
     lowercase: true, 
     trim: true 
   },
@@ -38,7 +35,12 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
-  inviteToken: String, 
+  inviteToken: {
+    type: String,
+  },
+  inviteTokenExpires: {   
+    type: Date,
+  }
 });
 
 const User = mongoose.model("User", userSchema);

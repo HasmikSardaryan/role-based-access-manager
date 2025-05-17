@@ -12,16 +12,9 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
-// app.use(cors({
-//     // origin: 'http://localhost:5173',
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true,
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// })); 
-
 app.use(cors({
   origin: (origin, callback) => {
-    callback(null, origin); // echo back the requesting origin
+    callback(null, origin); 
   },
   credentials: true
 }));
