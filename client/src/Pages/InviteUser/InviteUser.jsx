@@ -44,7 +44,6 @@ function InviteUserPage() {
         setMessage("Invitation sent successfully!");
         setEmail("");
         setPermissions([]);
-        // setTimeout(() => navigate("http://localhost:5173/login"), 1500);
       } else {
         setMessage(data.message || "Error sending invitation.");
       }

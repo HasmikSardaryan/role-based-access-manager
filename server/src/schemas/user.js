@@ -40,6 +40,12 @@ const userSchema = new mongoose.Schema({
   },
   inviteTokenExpires: {   
     type: Date,
+  },
+  resetToken: {
+    type: String,
+  },
+  resetTokenExpires: {   
+    type: Date,
   }
 });
 

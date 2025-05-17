@@ -1,0 +1,28 @@
+.reset-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .reset-container label {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .reset-container input {
+    margin-top: 5px;
+    padding: 5px;
+  }
+  
+  .reset-container button {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .message {
+    color: green;
+  }
+  

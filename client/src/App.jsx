@@ -5,6 +5,7 @@ import Reset from './Pages/ResetPage/ResetPage';
 import Logout from './Pages/LogoutPage/LogoutPage';
 import Activate from './Pages/ActivateAccaunt/ActivateAccaunt';
 import InviteUserPage from './Pages/InviteUser/InviteUser';
+import ResetPassword from './Pages/ResetPage/ResetPass';
 import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 
 const router = createBrowserRouter([
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   { path: '/forgot', element: <Reset/>, errorElement:<NotFoundPafge/> },
   { path: '/logout', element: <Logout/>, errorElement:<NotFoundPafge/> },
   { path: '/activate/:token', element: <Activate/>, errorElement: <NotFoundPafge/> },
+  { path: '/reset-password/:token', element: <ResetPassword/>, errorElement: <NotFoundPafge/> },
   { path: '/admin/invite-user', element: <InviteUserPage/>, errorElement: <NotFoundPafge/> },
 
 ]);
