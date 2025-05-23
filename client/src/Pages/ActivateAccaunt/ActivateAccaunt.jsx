@@ -9,27 +9,30 @@ export default function Activate() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhoneNumber] = useState("");
+  const [photo, setPhoto] = useState(null); 
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleActivate = async () => {
-    if (!password || !username || !phone) {
+    if (!password || !username || !phone || !photo) {
       setIsSuccess(false);
-      setMessage("Please fill in all required fields.");
+      setMessage("Please fill in all required fields, including a photo.");
       return;
     }
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("phone", phone);
+    formData.append("photo", photo); 
 
     try {
       const res = await fetch(`http://localhost:3000/activate/${token}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password, username, phone }),
+        body: formData,
       });
 
       const text = await res.text();
-
       let data;
       try {
         data = text ? JSON.parse(text) : {};
@@ -73,9 +76,20 @@ export default function Activate() {
           value={phone}
           onChange={(e) => setPhoneNumber(e.target.value)}
         />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPhoto(e.target.files[0])}
+        />
       </div>
-      <button className="btn-act" onClick={handleActivate}>Activate</button>
-      {message && <p className={`msg ${isSuccess ? "success" : "error"}`}>{message}</p>}
+      <button className="btn-act" onClick={handleActivate}>
+        Activate
+      </button>
+      {message && (
+        <p className={`msg ${isSuccess ? "success" : "error"}`}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }

@@ -20,11 +20,15 @@ const userSchema = new mongoose.Schema({
   email: { 
     type: String, 
     lowercase: true, 
+    unique: true, 
     trim: true 
   },
   phone: {
     type: String,
     default: ''
+  },
+  photo: {
+    type: String
   },
   role: {
     type: String,

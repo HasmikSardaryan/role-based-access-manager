@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import User from "../schemas/user.js";
+import { Photo } from '../schemas/photo.js';
 import transporter from '../../mailer.js';
 import bcrypt from "bcrypt";
 import dotenv from 'dotenv';
@@ -16,7 +17,6 @@ export const get_users = async (req, res) =>  {
     res.status(500).json({ error: "Server Error" });
   }
 };
-
 export const invite_user = async (req, res) => {
   const { email, permissions, frontendUrl } = req.body;
 
@@ -70,7 +70,6 @@ export const delete_user = async (req, res) => {
   const requestingUser = req.user;
 
   try {
-
     if (!requestingUser.permissions.includes("delete user")) {
       return res.status(403).json({ error: "You don't have permission to delete users." });
     }
@@ -95,6 +94,7 @@ export const activate_user = async (req, res) => {
 
   const { token } = req.params;
   const { password, username, phone} = req.body;
+  const photo = req.file;
 
   try {
     const user = await User.findOne({ inviteToken: token });
@@ -103,25 +103,35 @@ export const activate_user = async (req, res) => {
       return res.status(400).json({ message: "Activation link is invalid or expired." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    let photoUrl = null;
 
+    if (photo) {
+      const newPhoto = new Photo({
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+      });
+
+      const savedPhoto = await newPhoto.save();
+      photoUrl = `${req.protocol}://${req.get('host')}/api/photos/${savedPhoto._id}`;
+    }
+      
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     user.password = hashedPassword;
     user.username = username;
     user.phone = phone;
+    user.photo = photoUrl;
     user.status = 'active';
     user.inviteToken = undefined;
     user.inviteTokenExpires = undefined;
 
     await user.save();
-
     res.status(200).json({ message: "Account activated successfully." });
   } catch (err) {
     console.error("Activation Error:", err);
     res.status(500).json({ message: 'Server error during activation.' });
   }
 };
-
 export const reset_password = async (req, res) => {
   console.log('hbjnkbhjnmkj');
   const { email, frontendUrl } = req.body;
@@ -159,7 +169,6 @@ export const reset_password = async (req, res) => {
     res.status(500).json({ error: 'Something went wrong' });
   }
 };
-
 export const new_password = async (req, res) => {
 
   const { token, password1, password2 } = req.body;
@@ -178,7 +187,7 @@ export const new_password = async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired token' });
     }
     const hashedPassword = await bcrypt.hash(password1, 10);
-    
+
     user.password = hashedPassword; 
     user.resetToken = undefined;
     user.resetTokenExpires = undefined;
@@ -189,5 +198,44 @@ export const new_password = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
+  }
+};
+export const edit_email = async (req, res) => {
+  const { userId } = req.params;
+  const { email } = req.body;
+
+  const requestingUser = req.user;
+
+  try {
+    if (!requestingUser.permissions.includes("edit user")) {
+      return res.status(403).json({ error: "You don't have permission to edit users." });
+    }
+
+    const user = await User.findById(userId);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { email: email },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error." });
+  }
+};
+export const get_photo = async (req, res) => {
+ try {
+    const photo = await Photo.findById(req.params.photo_id);
+    if (!photo) return res.status(404).send('Photo not found');
+
+    res.set('Content-Type', photo.contentType);
+    res.send(photo.data);
+  } catch (err) {
+    res.status(500).send('Error retrieving photo');
   }
 }

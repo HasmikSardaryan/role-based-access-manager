@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import './LoginPage.css';
 
@@ -9,7 +9,13 @@ function Login() {
   const [password, setPassword] = useState('');
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const token = localStorage.getItem('token');
 
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    }
+  }, [])
 
   const handleRegister = async () => {
     try {
@@ -58,11 +64,11 @@ function Login() {
       <p>Login</p>
       <span className="log-span">
         Username:    
-      <input type="text" onChange={e => setLoginUsername(e.target.value)}/>
+        <input type="text" onChange={e => setLoginUsername(e.target.value)}/>
       </span>
       <span className="log-span">
         Password:
-      <input type="password" onChange={e => setLoginPassword(e.target.value)}/>
+        <input type="password" onChange={e => setLoginPassword(e.target.value)}/>
       </span>
       <button onClick={handleLogin}>Login</button>
       <span className="log-span">

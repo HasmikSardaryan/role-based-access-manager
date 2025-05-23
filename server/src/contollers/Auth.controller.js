@@ -22,7 +22,6 @@ export const register_post = async (req, res) => {
     res.status(500).json({ error: "Server error during registration" });
   }
 };
-
 export const login_post = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -59,7 +58,6 @@ export const login_post = async (req, res) => {
     res.status(500).json({ error: "Server error during login" });
   }
 };
-
 export const logout_post = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });

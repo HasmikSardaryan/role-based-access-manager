@@ -34,7 +34,6 @@ function HomePage() {
   const handleCreateUser = () => {
     navigate('/admin/invite-user');
   };
-
   const handleDelete = async (userId) => {
     const confirmed = window.confirm("Are you sure you want to delete this user?");
     if (!confirmed) return;
@@ -61,38 +60,47 @@ function HomePage() {
       alert("Server error.");
     }
   };
-
   const handleLogin = () => {
     navigate("/login");
   };
-
   const handleLogout = () => {
     navigate("/logout");
+  };
+  const handleEdit = (userId) => {
+    navigate(`/edit/${userId}`);
   };
 
   return (
     <>
-      <div className="buttons">
-        {permissions.includes('invite user') && (
-          <button className="invite-user-btn" onClick={handleCreateUser}>
-            Invite User
-          </button>
-        )}
-        {token ? (
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        ) : (
-          <button className="login-btn" onClick={handleLogin}>
-            Login
-          </button>
-        )}
-      </div>
-
+    <div className="buttons">
+      {permissions.includes('invite user') && (
+      <button className="invite-user-btn" onClick={handleCreateUser}>
+        Invite User
+      </button>
+      )}
+      {token ? (
+      <button className="logout-btn" onClick={handleLogout}>
+        Logout
+      </button>
+      ) : (
+      <button className="login-btn" onClick={handleLogin}>
+        Login
+      </button>
+      )}
+    </div>
       <div className="user-container">
         <div className="user-list">
           {users.map((user, index) => (
             <div className="user-card" key={`index-${index}`}>
+              <div className="user-photo">
+              {user.photo && (
+              <img
+              src={user.photo}
+              alt={`${user.username}'s avatar`}
+              style={{ width: 100, height: 100, objectFit: 'cover' }}
+              />
+              )}  
+              </div>
               <div className="user-info">
                 <p>username: {user.username}</p>
                 {permissions.includes("view email") && <p>email: {user.email}</p>}
@@ -105,11 +113,11 @@ function HomePage() {
                 {permissions.includes('delete user') && (
                   <button className="delete-btn" onClick={() => handleDelete(user._id)}>Delete</button>
                 )}
-              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
+    </div>
     </>
   );
 }
