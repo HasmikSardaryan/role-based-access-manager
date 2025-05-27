@@ -8,15 +8,38 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const get_users = async (req, res) =>  {
+export const get_users = async (req, res) => {
   try {
-    const users = await User.find({ status: "active" });
+    const currentUser = req.user;
+
+    const projection = {
+      username: 1,
+      photo: 1
+    };
+
+    if (currentUser.permissions?.includes("view email")) {
+      projection.email = 1;
+    } 
+    
+    if (currentUser.permissions?.includes("view about")) {
+      projection.about = 1;
+    }
+
+    if (currentUser.permissions?.includes("view phone")) {
+      projection.phone = 1;
+    }
+
+    const users = await User.find({ status: "active" }, projection);
     res.json(users);
   } catch (err) {
     console.error("Failed to fetch users:", err);
     res.status(500).json({ error: "Server Error" });
   }
 };
+
+
+
+
 export const invite_user = async (req, res) => {
   const { email, permissions, frontendUrl } = req.body;
 
@@ -28,7 +51,7 @@ export const invite_user = async (req, res) => {
     }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    if (existingUser && existingUser.status != 'deleted') {
       return res.status(400).json({ message: "User already invited or registered." });
     }
 
@@ -105,15 +128,24 @@ export const activate_user = async (req, res) => {
 
     let photoUrl = null;
 
-    if (photo) {
-      const newPhoto = new Photo({
-        data: req.file.buffer,
-        contentType: req.file.mimetype,
-      });
-
-      const savedPhoto = await newPhoto.save();
-      photoUrl = `${req.protocol}://${req.get('host')}/api/photos/${savedPhoto._id}`;
+    if (req.file) {
+      try {
+        const newPhoto = new Photo({
+          data: req.file.buffer,
+          contentType: req.file.mimetype,
+        });
+    
+        const savedPhoto = await newPhoto.save();
+        photoUrl = `${req.protocol}://${req.get('host')}/api/photos/${savedPhoto._id}`;
+      } catch (err) {
+        console.error('Error saving photo:', err);
+        photoUrl = `${req.protocol}://${req.get('host')}/avatar.jpg`;
+      }
+    } else {
+      console.log('No photo uploaded. Using default avatar.');
+      photoUrl = `${req.protocol}://${req.get('host')}/avatar.jpg`;
     }
+  
       
     const hashedPassword = await bcrypt.hash(password, 10);
 

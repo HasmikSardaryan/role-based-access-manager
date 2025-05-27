@@ -7,10 +7,10 @@ import { invite_user , get_users, get_photo,
 
 const PostRouter = express.Router();
 
-PostRouter.get("/api/users", get_users);
+PostRouter.get("/api/users", verifyToken, get_users); //correct
 PostRouter.put('/api/users/:id/delete', verifyToken, delete_user)
-PostRouter.post('/admin/invite-user', verifyToken, invite_user);
-PostRouter.post('/activate/:token', upload.single('photo') , activate_user);
+PostRouter.post('/admin/invite-user', verifyToken, invite_user); // correct
+PostRouter.post('/activate/:token', upload.single('photo') , activate_user); 
 PostRouter.post('/reset-password', reset_password);
 PostRouter.post('/new-password', new_password);
 PostRouter.patch('/edit/email/:userId', verifyToken, edit_email);

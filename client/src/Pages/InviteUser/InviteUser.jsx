@@ -15,8 +15,8 @@ function InviteUserPage() {
     "invite user",
     "delete user",
     "edit user",
-    "view_email",
-    "view_phone",
+    "view email",
+    "view phone",
   ];  
 
   const handleSubmit = async (e) => {

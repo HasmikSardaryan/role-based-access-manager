@@ -14,9 +14,9 @@ export default function Activate() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleActivate = async () => {
-    if (!password || !username || !phone || !photo) {
+    if (!password || !username || !phone ) {
       setIsSuccess(false);
-      setMessage("Please fill in all required fields, including a photo.");
+      setMessage("Please fill in all required fields");
       return;
     }
 

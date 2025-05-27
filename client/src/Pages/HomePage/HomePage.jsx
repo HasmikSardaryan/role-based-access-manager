@@ -12,24 +12,32 @@ function HomePage() {
 
   useEffect(() => {
     if (token) {
-      fetch("http://localhost:3000/api/users")
-        .then((res) => res.json())
-        .then((data) => setUsers(data))
-        .catch((err) => console.error("Error fetching users:", err));
 
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
       const role = decodedToken.role;
-      const data = decodedToken.permissions;
-
-      setPermissions(data);
+      const permissions = decodedToken.permissions;
+  
+      setPermissions(permissions);
       if (role === 'admin') {
         setIsAdmin(true);
       }
-
+  
+      fetch(`http://localhost:3000/api/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((data) => setUsers(data))
+        .catch((err) => console.error("Error fetching users:", err));
+  
     } else {
       navigate('/login');
     }
   }, [token, navigate]);
+  
 
   const handleCreateUser = () => {
     navigate('/admin/invite-user');
@@ -94,17 +102,16 @@ function HomePage() {
             <div className="user-card" key={`index-${index}`}>
               <div className="user-photo">
               {user.photo && (
-              <img
+              <img className="user-avatar"
               src={user.photo}
               alt={`${user.username}'s avatar`}
-              style={{ width: 100, height: 100, objectFit: 'cover' }}
               />
               )}  
               </div>
               <div className="user-info">
                 <p>username: {user.username}</p>
-                {permissions.includes("view email") && <p>email: {user.email}</p>}
-                {permissions.includes("view phone") && <p>phone number : {user.phone}</p>}
+                <p>email: {user?.email}</p>
+                <p>phone number : {user?.phone}</p>
               </div>
               <div className="user-actions">
                 {permissions.includes('edit user') && (
