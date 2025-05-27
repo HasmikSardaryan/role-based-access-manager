@@ -10,6 +10,7 @@ export default function Activate() {
   const [username, setUsername] = useState("");
   const [phone, setPhoneNumber] = useState("");
   const [photo, setPhoto] = useState(null); 
+  const [about, setAbout] = useState(""); 
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -47,7 +48,9 @@ export default function Activate() {
 
       setIsSuccess(true);
       setMessage(data.message || "Account activated successfully.");
-      setTimeout(() => navigate("/login"), 3000);
+      setTimeout(() => {
+        window.location.href = "http://localhost:5173/login";
+      }, 3000);
     } catch (err) {
       setIsSuccess(false);
       setMessage(err.message || "Activation failed.");
@@ -75,6 +78,12 @@ export default function Activate() {
           placeholder="Phone number"
           value={phone}
           onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="About myself"
+          value={about}
+          onChange={(e) => setAbout(e.target.value)}
         />
         <input
           type="file"

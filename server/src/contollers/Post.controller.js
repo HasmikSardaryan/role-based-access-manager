@@ -36,10 +36,6 @@ export const get_users = async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 };
-
-
-
-
 export const invite_user = async (req, res) => {
   const { email, permissions, frontendUrl } = req.body;
 
@@ -99,14 +95,13 @@ export const delete_user = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { status: "deleted" },
+      { status: "deleted", email: "" },
       { new: true }
     );
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found." });
     }
-
     res.json({ message: "User status set to 'deleted'." });
   } catch (err) {
     console.error(err);
@@ -116,34 +111,45 @@ export const delete_user = async (req, res) => {
 export const activate_user = async (req, res) => {
 
   const { token } = req.params;
-  const { password, username, phone} = req.body;
+  const { password, username, phone, about} = req.body;
   const photo = req.file;
 
+  if (!token) {
+    return res.status(400).json({ message: "Activation token is required." });
+  } ////////////
+
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username and password are required." });
+  }
+
+
   try {
+
+    const existingUser = await User.findOne({ username: username });
+    if (existingUser && existingUser.status != 'deleted') {
+      return res.status(400).json({ message: "A user with this username already exists." });
+    }
+
     const user = await User.findOne({ inviteToken: token });
 
     if (!user || user.inviteTokenExpires < new Date()) {
       return res.status(400).json({ message: "Activation link is invalid or expired." });
     }
 
-    let photoUrl = null;
+    let photoUrl = `${req.protocol}://${req.get('host')}/avatar.jpg`;
 
-    if (req.file) {
+    if (photo) {
       try {
         const newPhoto = new Photo({
           data: req.file.buffer,
-          contentType: req.file.mimetype,
+          contentType: photo.mimetype,
         });
     
         const savedPhoto = await newPhoto.save();
         photoUrl = `${req.protocol}://${req.get('host')}/api/photos/${savedPhoto._id}`;
       } catch (err) {
         console.error('Error saving photo:', err);
-        photoUrl = `${req.protocol}://${req.get('host')}/avatar.jpg`;
       }
-    } else {
-      console.log('No photo uploaded. Using default avatar.');
-      photoUrl = `${req.protocol}://${req.get('host')}/avatar.jpg`;
     }
   
       
@@ -152,6 +158,7 @@ export const activate_user = async (req, res) => {
     user.password = hashedPassword;
     user.username = username;
     user.phone = phone;
+    user.about = about;
     user.photo = photoUrl;
     user.status = 'active';
     user.inviteToken = undefined;
@@ -165,7 +172,6 @@ export const activate_user = async (req, res) => {
   }
 };
 export const reset_password = async (req, res) => {
-  console.log('hbjnkbhjnmkj');
   const { email, frontendUrl } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -232,10 +238,8 @@ export const new_password = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
-export const edit_email = async (req, res) => {
+export const edit_user = async (req, res) => {
   const { userId } = req.params;
-  const { email } = req.body;
-
   const requestingUser = req.user;
 
   try {
@@ -245,29 +249,35 @@ export const edit_email = async (req, res) => {
 
     const user = await User.findById(userId);
 
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+
+    const updates = {};
+
+    if (req.body.email && req.body.email !== user.email) {
+      const existingUser = await User.findOne({ email: req.body.email });
+      if (existingUser && existingUser._id.toString() !== userId) {
+        return res.status(400).json({ error: "Email already exists." });
+      }
+      updates.email = req.body.email;
+    }
+    if (req.body.phone) updates.phone = req.body.phone;
+    if (req.file) updates.photo = req.file.path; 
+
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { email: email },
+      userId, 
+      updates,
       { new: true }
     );
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found." });
     }
-
+    return res.status(200).json( { message: "User updated successfully."})
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error." });
   }
 };
-export const get_photo = async (req, res) => {
- try {
-    const photo = await Photo.findById(req.params.photo_id);
-    if (!photo) return res.status(404).send('Photo not found');
-
-    res.set('Content-Type', photo.contentType);
-    res.send(photo.data);
-  } catch (err) {
-    res.status(500).send('Error retrieving photo');
-  }
-}

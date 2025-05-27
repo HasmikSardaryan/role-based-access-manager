@@ -1,52 +1,89 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import './EditPage.css'
+import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import './EditPage.css';
 
 export default function EditUser() {
-  const { userId } = useParams();
-  const [email, setEmail] = useState("");
 
-  const handleEditMail = async (e) => {
-    e.preventDefault();
+  const { userId } = useParams();
+
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleEdit = async () => {
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("phone", phone);
+    if (photo) formData.append("photo", photo);
+
     try {
-      const res = await fetch(`http://localhost:3000/edit/email/${userId}`, {
+      const res = await fetch(`http://localhost:3000/edit/user/${userId}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email }),
+        credentials: "include",
+        body: formData,
       });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Failed to update email");
+      const text = await res.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (err) {
+        throw new Error("Invalid JSON response from server.");
       }
 
-      alert("Email updated successfully!");
+      if (!res.ok) {
+        setIsSuccess(false);
+        throw new Error(data.error || "Failed to update user.");
+      }
+
+      setIsSuccess(true);
+      setMessage(data.message || "User updated successfully!");
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (err) {
-      alert("Error: " + err.message);
+      setIsSuccess(false);
+      setMessage(err.message || "Update failed.");
     }
   };
 
   return (
-    <div className="edit-user-container">
-      <h2>Edit User</h2>
-      <form onSubmit={handleEditMail}>
-        <label>
-          Email: 
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </label>
-        <br />
-        <button type="submit">Save Changes</button>
-      </form>
+    <div className="container">
+      <h1>Edit User</h1>
+      <div className="inp-div">
+        <input
+          type="email"
+          placeholder="New Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="New Phone Number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPhoto(e.target.files[0])}
+        />
+      </div>
+      <button className="btn-act" onClick={handleEdit}>
+        Save Changes
+      </button>
+      {message && (
+        <p className={`msg ${isSuccess ? "success" : "error"}`}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }
-

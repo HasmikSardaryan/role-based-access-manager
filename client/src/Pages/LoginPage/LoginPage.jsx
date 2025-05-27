@@ -17,25 +17,6 @@ function Login() {
     }
   }, [])
 
-  const handleRegister = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      }
-    );
-      const data = await response.json();
-      if (response.ok) {
-        alert('Account created!');
-      } else {
-        alert(data.error || 'Something went wrong');
-      }
-    } catch (err) {
-      alert('Error connecting to server');
-    }
-  };
-
   const handleLogin = async () => {
     try {
       const response = await fetch('http://localhost:3000/login', {
@@ -74,16 +55,6 @@ function Login() {
       <span className="log-span">
       <Link to="/forgot" style={{ color: '#551AB8' }}>Forgot your password?</Link>
       </span>
-      <p>Create Account</p>
-      <span className="log-span">
-        Username:
-        <input type="text" onChange={e => setUsername(e.target.value)} />
-      </span>
-      <span className="log-span">
-        Password:
-        <input type="password" onChange={e => setPassword(e.target.value)} />
-      </span>
-      <button onClick={handleRegister}>Create Account</button>
     </div>
     </>
   );

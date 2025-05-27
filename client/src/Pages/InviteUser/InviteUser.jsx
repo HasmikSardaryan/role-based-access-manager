@@ -17,6 +17,7 @@ function InviteUserPage() {
     "edit user",
     "view email",
     "view phone",
+    "view about",
   ];  
 
   const handleSubmit = async (e) => {

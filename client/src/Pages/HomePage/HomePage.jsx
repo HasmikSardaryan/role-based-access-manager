@@ -109,9 +109,10 @@ function HomePage() {
               )}  
               </div>
               <div className="user-info">
-                <p>username: {user.username}</p>
-                <p>email: {user?.email}</p>
-                <p>phone number : {user?.phone}</p>
+                <p>Username: {user.username}</p>
+                <p>Email: {user.email}</p>
+                <p>Phone Number : {user.phone}</p>
+                <p>About user : {user.about}</p>
               </div>
               <div className="user-actions">
                 {permissions.includes('edit user') && (
